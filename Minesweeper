@@ -1,0 +1,265 @@
+package minesweeper;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+public class Board extends JFrame implements MouseListener{ // create Board class for game board
+	
+	JFrame frame;
+	ImageIcon image;
+	Buttons[][] board = new Buttons[9][9];
+	int openButton;
+	
+	public Board() {
+		openButton=0;
+		frame = new JFrame("Mine Sweeper");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(500,500);
+		frame.setResizable(false);
+		
+		frame.setLayout(new GridLayout(9,9));
+		
+		for(int row=0; row<board.length; row++) { 
+			for(int col=0; col<board[0].length; col++) { // iki for döngüsü ile arraydeki tüm elemanları geziyoruz
+				Buttons button = new Buttons(row,col);
+				frame.add(button);
+				button.addMouseListener(this);
+				board[row][col]=button;
+				
+			}
+		}
+		addMine();
+		countMines();
+		//print();
+		frame.setVisible(true);
+	
+	}
+	
+	public void addMine() { // random satır ve sütuna mayın ekledim.
+		
+		int i=0;
+		while(i<15) {
+			int randomRow = (int)Math.random()*board.length;
+			int randomCol = (int)Math.random()*board.length;
+			
+			while(board[randomRow][randomCol].isMine()) {
+				randomRow = (int) (Math.random()*board.length);
+				randomCol = (int)(Math.random()*board.length);
+			}
+			board[randomRow][randomCol].setMine(true);
+			i++;
+		}
+	}
+	
+	
+	
+	public void print() { // random eklediğim mayınları yazdırdım
+		ImageIcon image=new ImageIcon("mine4.png");
+		
+	
+		for(int row=0; row<board.length; row++) { 
+			for(int col=0; col<board[0].length; col++) { // iki for döngüsü ile arraydeki tüm elemanları geziyoruz
+				if(board[row][col].isMine()) {
+					board[row][col].setIcon(image);
+					
+				}
+				else {
+					board[row][col].setText(board[row][col].getCount()+""); // string ile sayı yazdırma
+					board[row][col].setEnabled(false);
+				}
+			}
+		}
+		
+	}
+	public void countMines() {
+		for(int row=0; row<board.length; row++) { 
+			for(int col=0; col<board[0].length; col++) { // iki for döngüsü ile arraydeki tüm elemanları geziyoruz
+				if(board[row][col].isMine()) {
+					count(row,col);
+					
+				}
+			} }
+		
+		
+	}
+	public void count(int row, int col) { // etraftaki mayınları sayıp arttırmak
+		for(int i=row-1; i<=row+1; i++) {
+			for(int j=col-1; j<=col+1; j++) {
+				try {
+				int value = board[i][j].getCount();
+				board[i][j].setCount(++value);
+				} catch(Exception e) {
+					
+				}
+				
+				
+			}
+			
+		}
+		
+	}
+	public void open(int row, int col) {
+		if(row<0 || row>= board.length || col<0 || col>=board[0].length || board[row][col].getText().length()>0 || board[row][col].isEnabled()==false) {
+			return;
+		}
+		else if(board[row][col].getCount()!= 0) {
+			board[row][col].setText(board[row][col].getCount()+ "");
+			board[row][col].setEnabled(false);
+			openButton++;
+		}
+		else {
+			openButton++;
+			board[row][col].setEnabled(false); // açmak demek
+			open(row-1,col);
+			open(row+1,col);
+			open(row,col-1);
+			open(row,col+1);
+			
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		Buttons button = (Buttons) e.getComponent(); // bu sekilde tıklanan butonun nesnesini alabiliyorum
+		if(e.getButton()==1) { // sol click
+			
+			if(button.isMine()) { // eğer mayına basarsa oyun biter
+				JOptionPane.showMessageDialog(frame,"Mine!Game Over.");
+				print();
+			}
+			else {
+				
+				open(button.getRow(),button.getCol());
+				if(openButton == (board.length * board[0].length)-10) {
+					JOptionPane.showMessageDialog(frame, "Congratulations! You win!");
+					print();
+				}
+			}
+			
+		}
+		else if(e.getButton()==3) { // sag klik
+			
+			if(!button.isFlag()) {
+				button.setIcon(new ImageIcon("flag.png"));
+				button.setFlag(true);
+			}
+			else {
+				button.setIcon(null);
+				button.setFlag(false);
+			}
+		}
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+	
+package minesweeper;
+
+import javax.swing.JButton;
+
+public class Buttons extends JButton{
+	
+	private int row,col;
+	private int count=0; // The number in each boxes to show mine count
+	private boolean isMine;
+	private boolean flag; // to remember where mine is
+	
+	public Buttons(int row, int col ) {
+		
+		this.row = row;
+		this.col = col;
+		this.count =0; // at first, there is not any mines
+		this.isMine=false; // at first false
+		this.flag=false; // at first false
+		
+	}
+
+	public int getRow() {
+		return row;
+	}
+
+	public void setRow(int row) {
+		this.row = row;
+	}
+
+	public int getCol() {
+		return col;
+	}
+
+	public void setCol(int col) {
+		this.col = col;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	public boolean isMine() {
+		return isMine;
+	}
+
+	public void setMine(boolean isMine) {
+		this.isMine = isMine;
+	}
+
+	public boolean isFlag() {
+		return flag;
+	}
+
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+
+}
+package minesweeper;
+
+public class Main {
+
+	public static void main(String[] args) {
+		
+		Board gameBoard = new Board(); // just create an object to call the class
+
+	}
+
+}
+
+
