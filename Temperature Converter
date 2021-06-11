@@ -1,0 +1,156 @@
+package temperature;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+
+
+
+public class TemperatureConvert extends JFrame {
+	
+	
+	public JLabel lbl;
+	public JLabel lbl2;
+	public JTextField text;
+	public JTextField output;
+	public JRadioButton fromC;
+	public JRadioButton fromF;
+	public JRadioButton fromK;
+	public JRadioButton toC;
+	public JRadioButton toF;
+	public JRadioButton toK;
+	public JFrame frame;
+	public JPanel panel;
+	
+	class myClickEventListener implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			String input;
+	        double temp;
+			
+			if(fromC.isSelected()==true && toF.isSelected()==true) {
+				String s = text.getText();
+	            double d = ((Integer.valueOf(s))*1.8)+32;
+	            output.setText(String.valueOf(d));
+			}
+			else if(fromF.isSelected()==true && toC.isSelected()==true) {
+				input = text.getText();
+				temp=((Integer.valueOf(input))-32)/1.8;
+				output.setText(String.valueOf(temp));
+			}
+			else if(fromC.isSelected()==true && toK.isSelected()==true) {
+				input = text.getText();
+				temp = ((Integer.valueOf(input)))+273;
+				output.setText(String.valueOf(temp));
+				
+			}
+			else if(fromK.isSelected()==true && toC.isSelected()==true) {
+				input = text.getText();
+				temp= ((Integer.valueOf(input)))-273;
+				output.setText(String.valueOf(temp));
+			}
+			else if(fromF.isSelected()==true && toK.isSelected()==true) {
+				input = text.getText();
+				temp=(((Integer.valueOf(input))-32)*5)/9+273;
+				output.setText(String.valueOf(temp));
+			}
+			else if(fromK.isSelected()==true && toF.isSelected()==true) {
+				input = text.getText();
+				temp=(((Integer.valueOf(input))-273)*9)/5+32;
+				output.setText(String.valueOf(temp));
+			}	
+			else if(fromC.isSelected()==true && toC.isSelected()==true) {
+				input = text.getText();
+				temp=((Integer.valueOf(input)));
+				output.setText(String.valueOf(temp));
+				
+			}
+			else if(fromK.isSelected()==true && toK.isSelected()==true) {
+				input = text.getText();
+				temp = ((Integer.valueOf(input)));
+				output.setText(String.valueOf(temp));
+				
+			}
+			else if(fromF.isSelected()==true && toF.isSelected()==true) {
+				input = text.getText();
+				temp = ((Integer.valueOf(input)));
+				output.setText(String.valueOf(temp));
+			}
+		}
+	}
+	
+	public TemperatureConvert() {
+		
+		setLayout(new FlowLayout());
+		
+		addComponent();
+	
+	}
+	private void addComponent() {
+		lbl = new JLabel("Enter value");
+		text = new JTextField(20);
+		output = new JTextField(20);
+		lbl2 = new JLabel("Convert to:");
+		fromC = new JRadioButton("Celsius");
+		fromC.addActionListener(new myClickEventListener());
+		
+		fromF = new JRadioButton("F");
+		fromF.addActionListener(new myClickEventListener());
+		
+		fromK = new JRadioButton("Kelvin");
+		fromK.addActionListener(new myClickEventListener());
+		
+		toC = new JRadioButton("Celsius");
+		toC.addActionListener(new myClickEventListener());
+		toF = new JRadioButton("F");
+		toF.addActionListener(new myClickEventListener());
+		toK = new JRadioButton("Kelvin");
+		toK.addActionListener(new myClickEventListener());
+		
+	//	ButtonGroup group = new ButtonGroup();
+	//	group.add(fromC);
+	//	group.add(fromF);
+		//group.add(fromK);
+		
+		ButtonGroup group2 = new ButtonGroup();
+		group2.add(toC);
+		group2.add(toF);
+		group2.add(toK);
+		add(lbl);
+		
+		add(text);
+		add(fromC);
+		add(fromF);
+		add(fromK);
+		add(lbl2);
+		add(toC);
+		add(toF);
+		add(toK);
+		add(output);
+	
+	}
+
+	public static void main(String[] args) {
+		
+		TemperatureConvert converter = new TemperatureConvert();
+		converter.setTitle("Temperature Converter");
+		converter.setSize(600,600);
+		converter.setVisible(true);
+		converter.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		converter.setBounds(100, 120, 400, 400);
+		
+		
+	}
+
+	
+
+}
